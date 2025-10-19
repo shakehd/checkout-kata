@@ -17,4 +17,13 @@ public class UnitPricingStrategyTests
         
         Assert.That(actualTotalPrice, Is.EqualTo(numSkus * unitPrice));
     }
+
+    [Test]
+    public void Given_A_Negative_Price_Unit_Pricing_Creation_Should_Fail(
+        [Range(-100, -1, 10)] int unitPrice)
+    {
+        Assert.That(() => new UnitPricing(unitPrice),
+                    Throws.ArgumentException.With.Message.EqualTo("Price cannot be negative. (Parameter 'unitPrice')"));
+    }
+    
 }
