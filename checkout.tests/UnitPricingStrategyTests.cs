@@ -1,3 +1,5 @@
+using checkout.Pricing;
+
 namespace checkout.tests;
 
 [TestFixture]
