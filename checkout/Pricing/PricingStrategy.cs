@@ -6,7 +6,7 @@ public class UnitPricing(int unitPrice) : IPricingStrategy
         ? throw new ArgumentException("Price cannot be negative.", nameof(unitPrice))
         : unitPrice;
 
-    public int CalculateTotalPrice(int itemNum) =>
-        itemNum < 0 ? throw new ArgumentException("Item count cannot be negative.", nameof(itemNum))
-                    : UnitPrice * itemNum;
+    public int CalculateTotalPrice(int itemCount) =>
+        itemCount < 0 ? throw new ArgumentException("Item count cannot be negative.", nameof(itemCount))
+                    : UnitPrice * itemCount;
 }

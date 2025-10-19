@@ -32,7 +32,7 @@ public class UnitPricingStrategyTests
     {
         IPricingStrategy sut = new UnitPricing(0);
         Assert.That(() => sut.CalculateTotalPrice(itemCount),
-            Throws.ArgumentException.With.Message.EqualTo("Item count cannot be negative. (Parameter 'itemNum')"));
+            Throws.ArgumentException.With.Message.EqualTo("Item count cannot be negative. (Parameter 'itemCount')"));
     }
     
 }
