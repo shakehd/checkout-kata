@@ -15,6 +15,6 @@ public class SpecialPricing(int bundleSize, int specialPrice, int UnitPrice) : I
 {
     public int CalculateTotalPrice(int itemCount)
     {
-        return specialPrice;
+        return (itemCount/bundleSize)*specialPrice;
     }
 }
