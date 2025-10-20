@@ -1,4 +1,5 @@
 using checkout.Pricing;
+using checkout.validation;
 using NUnit.Framework.Internal;
 
 namespace checkout.tests;
@@ -11,10 +12,10 @@ public class SpecialPricingStrategyTests
         [Range(1, 10, 2)] int bundleSize,
         [Range(20, 100, 20)] int specialPrice)
     {
-        IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, 0);
+        IPricingStrategy sut = SpecialPricing.Create(bundleSize, specialPrice, 0);
         
         int actualTotalPrice =
-            sut.CalculateTotalPrice(bundleSize);
+            sut.CalculateTotalPrice((NonNegativeNumber)bundleSize);
         
         Assert.That(actualTotalPrice, Is.EqualTo(specialPrice));
     }
@@ -25,10 +26,10 @@ public class SpecialPricingStrategyTests
         [Range(20, 100, 20)] int specialPrice,
         [Random(0, 10, 5)] int multiFactor)
     {
-        IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, 0);
+        IPricingStrategy sut = SpecialPricing.Create(bundleSize, specialPrice, 0);
         
         int actualTotalPrice =
-            sut.CalculateTotalPrice(bundleSize * multiFactor);
+            sut.CalculateTotalPrice((NonNegativeNumber)(bundleSize * multiFactor));
         
         Assert.That(actualTotalPrice,
             Is.AtLeast(multiFactor * specialPrice));
@@ -40,12 +41,12 @@ public class SpecialPricingStrategyTests
         [Range(0, 10, 2)] int unitPrice,
         [Range(20, 100, 20)] int specialPrice)
     {
-        IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, unitPrice);
+        IPricingStrategy sut = SpecialPricing.Create(bundleSize, specialPrice, unitPrice);
         
         Randomizer randomizer = new Randomizer(42);
         int itemCount = bundleSize - randomizer.Next(1, bundleSize);
         
-        int actualTotalPrice = sut.CalculateTotalPrice(itemCount);
+        int actualTotalPrice = sut.CalculateTotalPrice((NonNegativeNumber)itemCount);
         
         Assert.That(actualTotalPrice, Is.EqualTo(itemCount * unitPrice));
     }
@@ -56,12 +57,12 @@ public class SpecialPricingStrategyTests
         [Range(0, 10, 2)] int unitPrice,
         [Range(20, 100, 20)] int specialPrice)
     {
-        IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, unitPrice);
+        IPricingStrategy sut = SpecialPricing.Create(bundleSize, specialPrice, unitPrice);
         
         var randomizer = new Randomizer(42);
         int itemCount = bundleSize + randomizer.Next(10);
         
-        int actualTotalPrice = sut.CalculateTotalPrice(itemCount);
+        int actualTotalPrice = sut.CalculateTotalPrice((NonNegativeNumber)itemCount);
         
         int expectedTotalPrice = (itemCount / bundleSize) * specialPrice + itemCount % bundleSize * unitPrice;
         
@@ -72,7 +73,7 @@ public class SpecialPricingStrategyTests
     public void Given_A_Non_Positive_Bundle_Size_Special_Pricing_Creation_Should_Fail(
         [Range(-100, 0, 10)] int bundleSize)
     {
-        Assert.That(() => new SpecialPricing(bundleSize, 0, 0),
+        Assert.That(() => SpecialPricing.Create(bundleSize, 0, 0),
             Throws.ArgumentException.With.Message.EqualTo("Bundle size must be positive. (Parameter 'bundleSize')"));
     }
     
@@ -80,7 +81,7 @@ public class SpecialPricingStrategyTests
     public void Given_A_Negative_Special_Price_Special_Pricing_Creation_Should_Fail(
         [Range(-100, -1, 10)] int specialPrice)
     {
-        Assert.That(() => new SpecialPricing(1, specialPrice, 0),
+        Assert.That(() => SpecialPricing.Create(1, specialPrice, 0),
             Throws.ArgumentException.With.Message.EqualTo("Special price cannot be negative. (Parameter 'specialPrice')"));
     }
     
@@ -88,16 +89,7 @@ public class SpecialPricingStrategyTests
     public void Given_A_Negative_Unit_Price_Special_Pricing_Creation_Should_Fail(
         [Range(-100, -1, 10)] int unitPrice)
     {
-        Assert.That(() => new SpecialPricing(1, 1, unitPrice),
+        Assert.That(() => SpecialPricing.Create(1, 1, unitPrice),
             Throws.ArgumentException.With.Message.EqualTo("Unit price cannot be negative. (Parameter 'unitPrice')"));
-    }
-    
-    [Test]
-    public void Given_A_Negative_Item_Count_Special_Pricing_Calculation_Should_Fail(
-        [Range(-100, -1, 10)] int itemCount)
-    {
-        IPricingStrategy sut = new SpecialPricing(1, 1, 1);
-        Assert.That(() => sut.CalculateTotalPrice(itemCount),
-            Throws.ArgumentException.With.Message.EqualTo("Item count cannot be negative. (Parameter 'itemCount')"));
     }
 }

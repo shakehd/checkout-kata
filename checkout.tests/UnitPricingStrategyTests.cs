@@ -1,4 +1,5 @@
 using checkout.Pricing;
+using checkout.validation;
 
 namespace checkout.tests;
 
@@ -10,10 +11,10 @@ public class UnitPricingStrategyTests
         [Range(0, 100, 10)] int itemCount,
         [Range(0, 500, 50)] int unitPrice)
     {
-        IPricingStrategy sut = new UnitPricing(unitPrice);
+        IPricingStrategy sut = UnitPricing.Create(unitPrice);
         
         int actualTotalPrice =
-            sut.CalculateTotalPrice(itemCount);  
+            sut.CalculateTotalPrice((NonNegativeNumber)itemCount);  
         
         Assert.That(actualTotalPrice, Is.EqualTo(itemCount * unitPrice));
     }
@@ -22,17 +23,7 @@ public class UnitPricingStrategyTests
     public void Given_A_Negative_Price_Unit_Pricing_Creation_Should_Fail(
         [Range(-100, -1, 10)] int unitPrice)
     {
-        Assert.That(() => new UnitPricing(unitPrice),
+        Assert.That(() => UnitPricing.Create(unitPrice),
                     Throws.ArgumentException.With.Message.EqualTo("Price cannot be negative. (Parameter 'unitPrice')"));
     }
-    
-    [Test]
-    public void Given_A_Negative_Item_Count_Unit_Pricing_Calculation_Should_Fail(
-        [Range(-100, -1, 10)] int itemCount)
-    {
-        IPricingStrategy sut = new UnitPricing(0);
-        Assert.That(() => sut.CalculateTotalPrice(itemCount),
-            Throws.ArgumentException.With.Message.EqualTo("Item count cannot be negative. (Parameter 'itemCount')"));
-    }
-    
 }
