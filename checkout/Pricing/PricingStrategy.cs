@@ -13,6 +13,10 @@ public class UnitPricing(int unitPrice) : IPricingStrategy
 
 public class SpecialPricing(int bundleSize, int specialPrice, int unitPrice) : IPricingStrategy
 {
+    public int BundleSize { get; } = bundleSize <= 0
+        ? throw new ArgumentException("Bundle size must be positive.", nameof(bundleSize))
+        : bundleSize;
+    
     public int CalculateTotalPrice(int itemCount) =>
-        (itemCount / bundleSize) * specialPrice + itemCount % bundleSize * unitPrice;
+        (itemCount / BundleSize) * specialPrice + itemCount % bundleSize * unitPrice;
 }
