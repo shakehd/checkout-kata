@@ -1,4 +1,5 @@
 using checkout.Pricing;
+using NUnit.Framework.Internal;
 
 namespace checkout.tests;
 
@@ -31,5 +32,22 @@ public class SpecialPricingStrategyTests
         
         Assert.That(actualTotalPrice,
             Is.AtLeast(multiFactor * specialPrice));
+    }
+    
+    [Test]
+    public void Given_A_List_Of_SKUs_Should_Apply_Unit_Pricing_When_SKUs_Are_Less_Than_Bundle_Size(
+        [Range(2, 10, 2)] int bundleSize,
+        [Range(1, 10, 2)] int unitPrice,
+        [Range(20, 100, 20)] int specialPrice)
+    {
+        IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, unitPrice);
+        
+        Randomizer randomizer = new Randomizer(42);
+        int itemCount = bundleSize - randomizer.Next(1, bundleSize);
+        
+        int actualTotalPrice =
+            sut.CalculateTotalPrice(itemCount);
+        
+        Assert.That(actualTotalPrice, Is.EqualTo(itemCount * unitPrice));
     }
 }
