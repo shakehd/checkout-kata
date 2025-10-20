@@ -37,7 +37,7 @@ public class SpecialPricingStrategyTests
     [Test]
     public void Given_A_List_Of_SKUs_Should_Apply_Unit_Pricing_When_SKUs_Are_Less_Than_Bundle_Size(
         [Range(2, 10, 2)] int bundleSize,
-        [Range(1, 10, 2)] int unitPrice,
+        [Range(0, 10, 2)] int unitPrice,
         [Range(20, 100, 20)] int specialPrice)
     {
         IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, unitPrice);
@@ -53,7 +53,7 @@ public class SpecialPricingStrategyTests
     [Test]
     public void Given_A_List_Of_SKUs_Should_Apply_Special_Pricing_For_Each_Bundle_Of_SKU_And_Unit_Price_For_Remaining_SKUs(
         [Range(2, 10, 2)] int bundleSize,
-        [Range(1, 10, 2)] int unitPrice,
+        [Range(0, 10, 2)] int unitPrice,
         [Range(20, 100, 20)] int specialPrice)
     {
         IPricingStrategy sut = new SpecialPricing(bundleSize, specialPrice, unitPrice);
@@ -82,5 +82,13 @@ public class SpecialPricingStrategyTests
     {
         Assert.That(() => new SpecialPricing(1, specialPrice, 0),
             Throws.ArgumentException.With.Message.EqualTo("Special price cannot be negative. (Parameter 'specialPrice')"));
+    }
+    
+    [Test]
+    public void Given_A_Negative_Unit_Price_Special_Pricing_Creation_Should_Fail(
+        [Range(-100, -1, 10)] int unitPrice)
+    {
+        Assert.That(() => new SpecialPricing(1, 1, unitPrice),
+            Throws.ArgumentException.With.Message.EqualTo("Unit price cannot be negative. (Parameter 'unitPrice')"));
     }
 }
