@@ -91,4 +91,13 @@ public class SpecialPricingStrategyTests
         Assert.That(() => new SpecialPricing(1, 1, unitPrice),
             Throws.ArgumentException.With.Message.EqualTo("Unit price cannot be negative. (Parameter 'unitPrice')"));
     }
+    
+    [Test]
+    public void Given_A_Negative_Item_Count_Special_Pricing_Calculation_Should_Fail(
+        [Range(-100, -1, 10)] int itemCount)
+    {
+        IPricingStrategy sut = new SpecialPricing(1, 1, 1);
+        Assert.That(() => sut.CalculateTotalPrice(itemCount),
+            Throws.ArgumentException.With.Message.EqualTo("Item count cannot be negative. (Parameter 'itemCount')"));
+    }
 }
