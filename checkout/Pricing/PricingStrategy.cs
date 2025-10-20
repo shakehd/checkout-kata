@@ -26,5 +26,6 @@ public class SpecialPricing(int bundleSize, int specialPrice, int unitPrice) : I
         : unitPrice;
     
     public int CalculateTotalPrice(int itemCount) =>
-        (itemCount / BundleSize) * SpecialPrice + itemCount % bundleSize * UnitPrice;
+        itemCount < 0 ? throw new ArgumentException("Item count cannot be negative.", nameof(itemCount))
+                      : (itemCount / BundleSize) * SpecialPrice + itemCount % bundleSize * UnitPrice;
 }
