@@ -75,4 +75,12 @@ public class SpecialPricingStrategyTests
         Assert.That(() => new SpecialPricing(bundleSize, 0, 0),
             Throws.ArgumentException.With.Message.EqualTo("Bundle size must be positive. (Parameter 'bundleSize')"));
     }
+    
+    [Test]
+    public void Given_A_Negative_Special_Price_Special_Pricing_Creation_Should_Fail(
+        [Range(-100, -1, 10)] int specialPrice)
+    {
+        Assert.That(() => new SpecialPricing(1, specialPrice, 0),
+            Throws.ArgumentException.With.Message.EqualTo("Special price cannot be negative. (Parameter 'specialPrice')"));
+    }
 }
