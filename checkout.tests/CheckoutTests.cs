@@ -5,8 +5,8 @@ public class CheckoutTests
 {
     private ICheckout _sut;
 
-    [OneTimeSetUp]
-    public void OneTimeSetup()
+    [SetUp]
+    public void Setup()
     {
         _sut = new Checkout(); 
     }
@@ -24,6 +24,15 @@ public class CheckoutTests
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
         Assert.That(() => skuCodes.ForEach(sku => _sut.Scan(sku)), Throws.Nothing);
+    }
+    
+    [Test]
+    public void Given_A_Checkout_It_Should_Remember_The_Scanned_Sku_Codes(
+        [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
+    {
+        skuCodes.ForEach(sku => _sut.Scan(sku));
+        
+        Assert.That(_sut.GetSkuCodes(), Is.EqualTo(skuCodes).AsCollection);
     }
     
     public static IEnumerable<List<string>> SKUCodes => new List<List<string>>
