@@ -11,9 +11,8 @@ public class UnitPricing(int unitPrice) : IPricingStrategy
                     : UnitPrice * itemCount;
 }
 
-public class SpecialPricing(int bundleSize, int specialPrice, int UnitPrice) : IPricingStrategy
+public class SpecialPricing(int bundleSize, int specialPrice, int unitPrice) : IPricingStrategy
 {
     public int CalculateTotalPrice(int itemCount) =>
-        itemCount < bundleSize ? UnitPrice * itemCount
-                               : (itemCount/bundleSize)*specialPrice;
+        (itemCount / bundleSize) * specialPrice + itemCount % bundleSize * unitPrice;
 }
