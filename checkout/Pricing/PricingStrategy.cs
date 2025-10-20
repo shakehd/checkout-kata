@@ -10,3 +10,11 @@ public class UnitPricing(int unitPrice) : IPricingStrategy
         itemCount < 0 ? throw new ArgumentException("Item count cannot be negative.", nameof(itemCount))
                     : UnitPrice * itemCount;
 }
+
+public class SpecialPricing(int bundleSize, int specialPrice, int UnitPrice) : IPricingStrategy
+{
+    public int CalculateTotalPrice(int itemCount)
+    {
+        return specialPrice;
+    }
+}
