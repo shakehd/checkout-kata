@@ -67,4 +67,12 @@ public class SpecialPricingStrategyTests
         
         Assert.That(actualTotalPrice, Is.EqualTo(expectedTotalPrice));
     }
+    
+    [Test]
+    public void Given_A_Non_Positive_Bundle_Size_Special_Pricing_Creation_Should_Fail(
+        [Range(-100, 0, 10)] int bundleSize)
+    {
+        Assert.That(() => new SpecialPricing(bundleSize, 0, 0),
+            Throws.ArgumentException.With.Message.EqualTo("Bundle size must be positive. (Parameter 'bundleSize')"));
+    }
 }
