@@ -2,7 +2,7 @@ namespace checkout.validation;
 
 public record NonNegativeNumber(int Value, string ErrorMessage)
 {
-    public int Value { get; init; } =
+    public int Value { get;} =
         Value < 0
             ? throw new ArgumentException(ErrorMessage)
             : Value;

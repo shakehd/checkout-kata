@@ -11,17 +11,15 @@ public class UnitPricing (NonNegativeNumber unitPrice) : IPricingStrategy
             "Price cannot be negative. (Parameter 'unitPrice')"));
 }
 
-public class SpecialPricing(int bundleSize, NonNegativeNumber specialPrice, NonNegativeNumber unitPrice) : IPricingStrategy
+public class SpecialPricing(PositiveNumber bundleSize, NonNegativeNumber specialPrice, NonNegativeNumber unitPrice) : IPricingStrategy
 {
-    public int BundleSize { get; } = bundleSize <= 0
-        ? throw new ArgumentException("Bundle size must be positive.", nameof(bundleSize))
-        : bundleSize;
-    
     public int CalculateTotalPrice(NonNegativeNumber itemCount) =>
-        (itemCount / BundleSize) * specialPrice + itemCount % BundleSize * unitPrice;
+        (itemCount / bundleSize) * specialPrice + itemCount % bundleSize * unitPrice;
 
     public static SpecialPricing Create(int bundleSize, int specialPrice, int unitPrice) =>
-        new SpecialPricing(bundleSize,
+        new SpecialPricing(
+            new PositiveNumber(bundleSize, 
+                "Bundle size must be positive. (Parameter 'bundleSize')"), 
             new NonNegativeNumber(specialPrice,
                 "Special price cannot be negative. (Parameter 'specialPrice')"),
             new NonNegativeNumber(unitPrice,
