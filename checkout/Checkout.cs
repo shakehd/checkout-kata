@@ -1,8 +1,12 @@
+using checkout.Pricing;
+using checkout.validation;
+
 namespace checkout;
 
-public class Checkout : ICheckout
+public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheckout
 {
     private readonly ICollection<string> _skuCodes = [];
+    
     public void Scan(string skuCode)
     {
         _skuCodes.Add(skuCode);
@@ -10,7 +14,12 @@ public class Checkout : ICheckout
 
     public int GetTotalPrice()
     {
-        return 0;
+        ILookup<string,string> skuCounts = _skuCodes.ToLookup(c => c);
+
+        return skuCounts
+            .Select(gr => 
+                (ps: pricingStrategyProvider.GetPricingStrategy(gr.Key), count: gr.Count()))
+            .Sum(item => item.ps.CalculateTotalPrice((NonNegativeNumber)item.count));
     }
 
     public IEnumerable<string> GetSkuCodes()
