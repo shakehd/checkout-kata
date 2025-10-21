@@ -1,5 +1,6 @@
 using checkout.Exception;
 using checkout.Pricing;
+using checkout.validation;
 using NSubstitute;
 
 namespace checkout.tests;
@@ -29,14 +30,14 @@ public class CheckoutTests
     public void Given_A_Checkout_Scanning_Multiple_SKUs_Should_Not_Raise_Errors(
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
-        Assert.That(() => skuCodes.ForEach(sku => _sut.Scan(sku)), Throws.Nothing);
+        Assert.That(() => skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku)), Throws.Nothing);
     }
     
     [Test]
     public void Given_A_Checkout_It_Should_Remember_The_Scanned_Sku_Codes(
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
-        skuCodes.ForEach(sku => _sut.Scan(sku));
+        skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku));
         
         Assert.That(_sut.GetSkuCodes(), Is.EqualTo(skuCodes).AsCollection);
     }
@@ -50,7 +51,7 @@ public class CheckoutTests
         _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
             .Returns(info => PricingStrategies[info.ArgAt<string>(0)]);
         
-        skuCodes.ForEach(sku => _sut.Scan(sku));
+        skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku));
     
         int actualTotalPrice = _sut.GetTotalPrice();
         
@@ -67,17 +68,10 @@ public class CheckoutTests
         _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
             .Returns(_ => null!);
 
-        _sut.Scan(skuCode);
+        _sut.Scan((NotEmptyAndNullString)skuCode);
         
         Assert.That(() => _sut.GetTotalPrice(), 
             Throws.InstanceOf<PricingStrategyNotFound>().With.Message.EqualTo($"Pricing strategy not found for sku code {skuCode}."));
-    }
-    
-    [Test]
-    public void Given_A_Empty_SKU_Code_A_Checkout_Should_Fail()
-    {
-        Assert.That(() => _sut.Scan(string.Empty),  
-            Throws.ArgumentException.With.Message.EqualTo($"SKU code cannot be null or empty. (Parameter 'skuCode')"));
     }
 
     private static Dictionary<string, IPricingStrategy> PricingStrategies => new()

@@ -8,7 +8,7 @@ public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheck
 {
     private readonly ICollection<string> _skuCodes = [];
 
-    public void Scan(string skuCode)
+    public void Scan(NotEmptyAndNullString skuCode)
     {
         if (string.IsNullOrEmpty(skuCode))
             throw new ArgumentException("SKU code cannot be null or empty.",  nameof(skuCode));
