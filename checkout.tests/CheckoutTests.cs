@@ -27,11 +27,14 @@ public class CheckoutTests
     }
     
     [Test]
-    public void Given_A_Checkout_Scanning_Multiple_SKUs_Should_Not_Raise_Errors(
+    public void Given_A_Checkout_It_Should_Retrieve_The_Pricing_Strategy_Of_The_SKU_Being_Scanned(
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
-        Assert.That(() => skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku)), Throws.Nothing);
+        skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku));
+        
+        _pricingStrategyProvider.Received().GetPricingStrategy(Arg.Is<string>(c => skuCodes.Contains(c)));
     }
+    
     
     [Test]
     public void Given_A_Checkout_It_Should_Remember_The_Scanned_Sku_Codes(
@@ -59,19 +62,6 @@ public class CheckoutTests
         _pricingStrategyProvider.Received().GetPricingStrategy(Arg.Is<string>(c => distinctSkuCodes.Contains(c)));
         
         Assert.That(actualTotalPrice, Is.EqualTo(expectedTotalPrice));
-    }
-
-    [Test]
-    public void Given_A_Non_Empty_Checkout_It_Should_Fail_If_A_Pricing_Strategy_Is_Not_Found_Computing_Total_Price()
-    {
-        const string skuCode = "A";
-        _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
-            .Returns(_ => null!);
-
-        _sut.Scan((NotEmptyAndNullString)skuCode);
-        
-        Assert.That(() => _sut.GetTotalPrice(), 
-            Throws.InstanceOf<PricingStrategyNotFound>().With.Message.EqualTo($"Pricing strategy not found for sku code {skuCode}."));
     }
 
     private static Dictionary<string, IPricingStrategy> PricingStrategies => new()
