@@ -10,10 +10,12 @@ public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheck
 
     public Result Scan(NotEmptyAndNullString skuCode)
     {
+        if (pricingStrategyProvider.GetPricingStrategy(skuCode) == null)
+            return new Result.Error(
+                $"Pricing strategy not found for sku code {skuCode}.");
+        
         _skuCodes.Add(skuCode);
-        return pricingStrategyProvider.GetPricingStrategy(skuCode) == null
-            ? new Result.Error($"Pricing strategy not found for sku code {skuCode}.")
-            : new Result.Ok();
+        return new Result.Ok();
     }
 
     public int GetTotalPrice()
