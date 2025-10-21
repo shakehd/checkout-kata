@@ -4,7 +4,7 @@ namespace checkout;
 
 public interface ICheckout
 {
-    void Scan(NotEmptyAndNullString skuCode);
+    Result Scan(NotEmptyAndNullString skuCode);
     
     int GetTotalPrice();
     

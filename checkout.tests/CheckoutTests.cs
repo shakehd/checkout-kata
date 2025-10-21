@@ -43,7 +43,7 @@ public class CheckoutTests
         
         IEnumerable<Result> results = skuCodes.Select(sku => _sut.Scan((NotEmptyAndNullString)sku));
         
-        Assert.That(results, Is.All.InstanceOf<Ok>());
+        Assert.That(results, Is.All.InstanceOf<Result.Ok>());
     }
     
     
