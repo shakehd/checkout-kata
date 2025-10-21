@@ -72,6 +72,13 @@ public class CheckoutTests
         Assert.That(() => _sut.GetTotalPrice(), 
             Throws.InstanceOf<PricingStrategyNotFound>().With.Message.EqualTo($"Pricing strategy not found for sku code {skuCode}."));
     }
+    
+    [Test]
+    public void Given_A_Empty_SKU_Code_A_Checkout_Should_Fail()
+    {
+        Assert.That(() => _sut.Scan(string.Empty),  
+            Throws.ArgumentException.With.Message.EqualTo($"SKU code cannot be null or empty. (Parameter 'skuCode')"));
+    }
 
     private static Dictionary<string, IPricingStrategy> PricingStrategies => new()
     {
