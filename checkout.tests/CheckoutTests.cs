@@ -1,4 +1,3 @@
-using checkout.Exception;
 using checkout.Pricing;
 using checkout.validation;
 using NSubstitute;
@@ -33,6 +32,18 @@ public class CheckoutTests
         skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku));
         
         _pricingStrategyProvider.Received().GetPricingStrategy(Arg.Is<string>(c => skuCodes.Contains(c)));
+    }
+
+    [Test]
+    public void Given_SKU_With_Pricing_Strategy_A_Checkout_Should_Return_OK_Scanning_The_SKU(
+        [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
+    {
+        _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
+            .Returns(info => PricingStrategies[info.ArgAt<string>(0)]);
+        
+        IEnumerable<Result> results = skuCodes.Select(sku => _sut.Scan((NotEmptyAndNullString)sku));
+        
+        Assert.That(results, Is.All.InstanceOf<Ok>());
     }
     
     
