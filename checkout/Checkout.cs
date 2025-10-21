@@ -10,6 +10,8 @@ public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheck
 
     public void Scan(string skuCode)
     {
+        if (string.IsNullOrEmpty(skuCode))
+            throw new ArgumentException("SKU code cannot be null or empty.",  nameof(skuCode));
         _skuCodes.Add(skuCode);
     }
 
