@@ -8,7 +8,11 @@ public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheck
 {
     private readonly ICollection<string> _skuCodes = [];
 
-    public void Scan(NotEmptyAndNullString skuCode) => _skuCodes.Add(skuCode);
+    public void Scan(NotEmptyAndNullString skuCode)
+    {
+        pricingStrategyProvider.GetPricingStrategy(skuCode);
+        _skuCodes.Add(skuCode);
+    }
 
     public int GetTotalPrice()
     {
