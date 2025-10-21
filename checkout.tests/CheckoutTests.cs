@@ -45,20 +45,22 @@ public class CheckoutTests
         
         Assert.That(results, Is.All.InstanceOf<Result.Ok>());
     }
-    
+
     [Test]
-    public void Given_SKU_Without_Pricing_Strategy_A_Checkout_Should_Return_An_Error_After_Scanning_The_SKU(
-        [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
+    public void
+        Given_SKU_Without_Pricing_Strategy_A_Checkout_Should_Return_An_Error_After_Scanning_The_SKU(
+            [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
         _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
             .Returns(_ => null);
-        
-        IEnumerable<Result> results = skuCodes.Select(sku => _sut.Scan((NotEmptyAndNullString)sku));
-        
+
+        IEnumerable<Result> results =
+            skuCodes.Select(sku => _sut.Scan((NotEmptyAndNullString)sku));
+
         Assert.That(results, Is.All.InstanceOf<Result.Error>());
+
     }
-    
-    
+
     [Test]
     public void Given_A_Checkout_It_Should_Remember_Only_The_Scanned_Sku_With_A_Pricing_Strategy(
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)

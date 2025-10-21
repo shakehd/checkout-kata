@@ -1,4 +1,3 @@
-using checkout.Exception;
 using checkout.Pricing;
 using checkout.validation;
 
@@ -35,7 +34,6 @@ public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheck
             .Sum(gr =>
                 _pricingStrategies[gr.Key]
                     .CalculateTotalPrice((NonNegativeNumber)gr.Count()));
-
     }
 
     public IEnumerable<string> GetSkuCodes()

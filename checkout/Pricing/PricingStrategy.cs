@@ -7,7 +7,7 @@ public class UnitPricing (NonNegativeNumber unitPrice) : IPricingStrategy
     public int CalculateTotalPrice(NonNegativeNumber itemCount) => unitPrice * itemCount;
 
     public static UnitPricing Create(int unitPrice) =>
-        new UnitPricing(new NonNegativeNumber(unitPrice,
+        new (new NonNegativeNumber(unitPrice,
             "Price cannot be negative. (Parameter 'unitPrice')"));
 }
 
@@ -17,7 +17,7 @@ public class SpecialPricing(PositiveNumber bundleSize, NonNegativeNumber special
         (itemCount / bundleSize) * specialPrice + itemCount % bundleSize * unitPrice;
 
     public static SpecialPricing Create(int bundleSize, int specialPrice, int unitPrice) =>
-        new SpecialPricing(
+        new (
             new PositiveNumber(bundleSize, 
                 "Bundle size must be positive. (Parameter 'bundleSize')"), 
             new NonNegativeNumber(specialPrice,
