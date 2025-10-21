@@ -49,7 +49,6 @@ public class CheckoutTests
         _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
             .Returns(info => PricingStrategies[info.ArgAt<string>(0)]);
         
-            
         skuCodes.ForEach(sku => _sut.Scan(sku));
     
         int actualTotalPrice = _sut.GetTotalPrice();
@@ -58,6 +57,18 @@ public class CheckoutTests
         _pricingStrategyProvider.Received().GetPricingStrategy(Arg.Is<string>(c => distinctSkuCodes.Contains(c)));
         
         Assert.That(actualTotalPrice, Is.EqualTo(expectedTotalPrice));
+    }
+
+    [Test]
+    public void Given_A_Non_Empty_Checkout_It_Should_Fail_If_A_Pricing_Strategy_Is_Not_Found_Computing_Total_Price()
+    {
+        const string skuCode = "A";
+        _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
+            .Returns(_ => null!);
+
+        _sut.Scan(skuCode);
+        Assert.That(() => _sut.GetTotalPrice(), 
+            Throws.InstanceOf<PricingStrategyNotFound>().With.Message.EqualTo($"Pricing strategy not found for sku code {skuCode}."));
     }
 
     private static Dictionary<string, IPricingStrategy> PricingStrategies => new()
