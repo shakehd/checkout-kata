@@ -51,7 +51,7 @@ public class CheckoutTests
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
         _pricingStrategyProvider.GetPricingStrategy(Arg.Any<string>())
-            .Returns(info => null);
+            .Returns(_ => null);
         
         IEnumerable<Result> results = skuCodes.Select(sku => _sut.Scan((NotEmptyAndNullString)sku));
         
@@ -60,11 +60,18 @@ public class CheckoutTests
     
     
     [Test]
-    public void Given_A_Checkout_It_Should_Remember_The_Scanned_Sku_Codes(
+    public void Given_A_Checkout_It_Should_Remember_Only_The_Scanned_Sku_With_A_Pricing_Strategy(
         [ValueSource(nameof(SKUCodes))] List<string> skuCodes)
     {
-        skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku));
+        _pricingStrategyProvider.GetPricingStrategy(Arg.Is<string>(c => skuCodes.Contains(c)))
+            .Returns(info => PricingStrategies[info.ArgAt<string>(0)]);
+        _pricingStrategyProvider.GetPricingStrategy(Arg.Is<string>("AA"))
+            .Returns(_ => null);
         
+        skuCodes.ForEach(sku => _sut.Scan((NotEmptyAndNullString)sku));
+        _sut.Scan((NotEmptyAndNullString)"AA");
+        
+        Assert.That(_sut.GetSkuCodes(), Does.Not.Contains("AA"));
         Assert.That(_sut.GetSkuCodes(), Is.EqualTo(skuCodes).AsCollection);
     }
     
