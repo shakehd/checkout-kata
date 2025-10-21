@@ -1,3 +1,4 @@
+using checkout.Exception;
 using checkout.Pricing;
 using NSubstitute;
 
@@ -67,6 +68,7 @@ public class CheckoutTests
             .Returns(_ => null!);
 
         _sut.Scan(skuCode);
+        
         Assert.That(() => _sut.GetTotalPrice(), 
             Throws.InstanceOf<PricingStrategyNotFound>().With.Message.EqualTo($"Pricing strategy not found for sku code {skuCode}."));
     }
