@@ -7,13 +7,22 @@ namespace checkout;
 public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheckout
 {
     private readonly ICollection<string> _skuCodes = [];
+    private readonly Dictionary<string,IPricingStrategy> _pricingStrategies = new();
 
     public Result Scan(NotEmptyAndNullString skuCode)
     {
-        if (pricingStrategyProvider.GetPricingStrategy(skuCode) == null)
+        if (_pricingStrategies.ContainsKey(skuCode))
+        {
+            _skuCodes.Add(skuCode);
+            return new Result.Ok();
+        }
+        
+        var pricingStrategy = pricingStrategyProvider.GetPricingStrategy(skuCode);
+        if (pricingStrategy == null)
             return new Result.Error(
                 $"Pricing strategy not found for sku code {skuCode}.");
-        
+
+        _pricingStrategies[skuCode] = pricingStrategy;
         _skuCodes.Add(skuCode);
         return new Result.Ok();
     }
@@ -23,10 +32,10 @@ public class Checkout(IPricingStrategyProvider pricingStrategyProvider) : ICheck
         ILookup<string, string> skuCounts = _skuCodes.ToLookup(c => c);
 
         return skuCounts
-            .Select(gr =>
-                (ps: pricingStrategyProvider.GetPricingStrategy(gr.Key) ?? throw new PricingStrategyNotFound($"Pricing strategy not found for sku code {gr.Key}."),
-                    count: gr.Count()))
-            .Sum(item => item.ps.CalculateTotalPrice((NonNegativeNumber)item.count));
+            .Sum(gr =>
+                _pricingStrategies[gr.Key]
+                    .CalculateTotalPrice((NonNegativeNumber)gr.Count()));
+
     }
 
     public IEnumerable<string> GetSkuCodes()
