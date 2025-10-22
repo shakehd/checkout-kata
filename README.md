@@ -20,7 +20,6 @@ The system needs to be flexible enough to handle these different pricing schemes
 The solution is organized into a clean and modular structure, promoting separation of concerns and ease of maintenance.
 
 ```
-/
 ─── checkout/
     ├── Pricing/
     │   ├── IPricingStrategy.cs
@@ -56,10 +55,6 @@ This directory contains small, reusable record types that enforce data validatio
 *   **`NonNegativeNumber.cs`**: Represents an integer that cannot be negative.
 *   **`PositiveNumber.cs`**: Represents an integer that must be greater than zero.
 *   **`NonEmptyAndNullString.cs`**: Represents a string that cannot be null or empty.
-
-### Testing (`/checkout.tests`)
-
-*   **`CheckoutTests.cs`**: Contains unit tests to verify the correctness of the checkout system's logic and calculations.
 
 ## How to Use
 
